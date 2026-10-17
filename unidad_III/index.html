@@ -1,1 +1,444 @@
+<!-- 
+  =============================================================
+  Metadata Header
+  Author: L.I. Luis Arturo López Vergara
+  Course: Matemáticas III (Administración y Contabilidad)
+  Unit: III - Modelos No Lineales en Negocios
+  Date: Octubre 2026
+  Description: Artefacto interactivo HTML con laboratorio de
+  optimización cuadrática, flashcards y prompts para LLMs.
+  =============================================================
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unidad III: Modelos No Lineales - Universidad William Osler</title>
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --primary-blue: #1e3a8a;
+            --accent-blue: #3b82f6;
+            --secondary-teal: #0d9488;
+            --bg-slate: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --excel-header: #0e6233;
+            --success-bg: #f0fdf4;
+            --success-border: #bbf7d0;
+            --success-text: #166534;
+            --warning-bg: #fffbeb;
+            --warning-text: #b45309;
+            --danger-bg: #fef2f2;
+            --danger-text: #b91c1c;
+        }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-slate); color: var(--text-main); line-height: 1.5; padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-blue));
+            color: white;
+            padding: 25px 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+            border-bottom: 4px solid var(--accent-blue);
+        }
+        header h1 { font-size: 22pt; margin-bottom: 4px; letter-spacing: -0.5px; }
+        header h2 { font-size: 13pt; font-weight: 400; color: #93c5fd; margin-bottom: 12px; }
+        .header-meta {
+            display: flex; justify-content: space-between; font-size: 10pt;
+            background: rgba(255, 255, 255, 0.1); padding: 8px 15px; border-radius: 6px;
+        }
+
+        .nav-tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; flex-wrap: wrap; }
+        .tab-btn {
+            padding: 9px 15px; border: none; background: #e2e8f0; color: var(--text-main);
+            font-weight: 600; font-size: 9.5pt; border-radius: 6px; cursor: pointer; transition: all 0.2s ease;
+        }
+        .tab-btn.active { background: var(--primary-blue); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        .tab-content { display: none; background: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--border-color); }
+        .tab-content.active { display: block; }
+
+        h2.section-title { color: var(--primary-blue); font-size: 16pt; margin-bottom: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 6px; }
+        h3.subsection-title { color: var(--primary-dark); font-size: 13pt; margin: 18px 0 8px 0; border-left: 4px solid var(--accent-blue); padding-left: 10px; }
+        
+        .concept-box { background-color: #eff6ff; border-left: 4px solid var(--accent-blue); padding: 14px 18px; margin: 12px 0 18px 0; border-radius: 0 8px 8px 0; font-size: 9.5pt; }
+        
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: 10px; margin: 15px 0 20px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+
+        .config-box { background-color: #1e293b; color: #f8fafc; padding: 15px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 9pt; margin: 15px 0; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 9.5pt; color: #334155; }
+        input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 9.5pt; background-color: #fff; }
+
+        .slider-group { display: flex; align-items: center; gap: 12px; }
+        .slider-group input[type="range"] { flex-grow: 1; accent-color: var(--primary-blue); cursor: pointer; }
+        .slider-val { min-width: 80px; text-align: right; font-weight: bold; color: var(--primary-blue); font-size: 10pt; }
+
+        .excel-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 9pt; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .excel-table th { background-color: var(--excel-header); color: white; padding: 9px; text-align: left; border: 1px solid #084422; font-weight: 600; }
+        .excel-table td { border: 1px solid var(--border-color); padding: 6px 8px; background-color: #ffffff; }
+        .excel-table tr:nth-child(even) td { background-color: #f8fafc; }
+
+        .metric-card { background: #f8fafc; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; text-align: center; }
+        .metric-card .val { font-size: 15pt; font-weight: bold; color: var(--primary-blue); }
+        .metric-card .lbl { font-size: 8pt; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .result-box { margin-top: 15px; padding: 15px; border-radius: 8px; font-size: 9.5pt; font-weight: 500; transition: all 0.3s; }
+
+        /* Flashcard Styles */
+        .flashcard-container { perspective: 1000px; width: 100%; max-width: 600px; height: 260px; margin: 20px auto; cursor: pointer; }
+        .flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s ease; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .flashcard.flipped { transform: rotateY(180deg); }
+        .flashcard-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 25px; text-align: center; border-radius: 12px; border: 2px solid var(--primary-blue); }
+        .flashcard-front { background: #ffffff; color: var(--primary-dark); }
+        .flashcard-back { background: var(--primary-blue); color: white; transform: rotateY(180deg); }
+        .card-nav { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
+
+        .prompt-card { background: #1e293b; color: #f8fafc; padding: 15px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 9pt; margin: 10px 0; position: relative; }
+        .copy-btn { position: absolute; top: 10px; right: 10px; background: var(--accent-blue); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 8pt; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Universidad William Osler</h1>
+        <h2>Matemáticas III | Unidad III: Modelos No Lineales en Negocios</h2>
+        <div class="header-meta">
+            <span><strong>Catedrático:</strong> L.I. Luis Arturo López Vergara</span>
+            <span><strong>Guía Interactiva Oficial y Simuladores (Versión Dinámica)</strong></span>
+        </div>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('etapa1')">1. Teoría & Vídeo Integrado</button>
+        <button class="tab-btn" onclick="switchTab('etapa2')">2. Tarjetas Didácticas (Flashcards)</button>
+        <button class="tab-btn" onclick="switchTab('etapa3')">3. Lab: Optimización (Sliders)</button>
+        <button class="tab-btn" onclick="switchTab('etapa4')">4. Casos con IA & Prompts</button>
+        <button class="tab-btn" onclick="switchTab('etapa5')">5. Dashboard Financiero</button>
+        <button class="tab-btn" onclick="switchTab('etapa6')">6. Aplicación Admon / Contabilidad</button>
+    </div>
+
+    <!-- ETAPA 1: TEORÍA Y VÍDEO -->
+    <div id="etapa1" class="tab-content active">
+        <h2 class="section-title">Etapa 1: Fundamentación Teórica y Análisis Audiovisual</h2>
+        
+        <div class="concept-box">
+            <h3 style="color: var(--primary-blue); font-size: 11pt; margin-bottom: 6px;"> Marco Teórico Fundamental</h3>
+            <p><strong>Funciones Cuadráticas (Parábolas):</strong> En economía, subir el precio de un producto reduce la demanda. La relación entre precio, cantidad e ingreso total no es una línea recta, sino una parábola invertida. El punto más alto (el vértice) representa el precio óptimo que maximiza los ingresos antes de que la caída en clientes destruya la rentabilidad.</p>
+            <br>
+            <p><strong>Funciones Exponenciales:</strong> Modelan el dinero en el tiempo. El crecimiento (Interés Compuesto) actúa como una bola de nieve donde los intereses generan más intereses. El decaimiento (Depreciación Acelerada) muestra cómo un activo pierde valor rápidamente al inicio y más lento al final, calculándose sobre el valor remanente.</p>
+            <br>
+            <p><strong>Fórmulas Centrales:</strong></p>
+            <ul style="margin-left: 20px; margin-top: 4px;">
+                <li><strong>El Vértice (Precio Óptimo):</strong> $$x = \frac{-b}{2a}$$ (Aplicado a la función $ax^2 + bx + c$).</li>
+                <li><strong>Interés Compuesto:</strong> $$M = C(1 + i)^n$$ (Donde C es el capital, i la tasa, n los periodos).</li>
+            </ul>
+        </div>
+
+        <h3 class="subsection-title"> Configuración Dinámica del Vídeo mediante JSON</h3>
+        <div class="config-box">
+            <pre><code id="json_config_display">{
+  "unit": "Unidad III: Modelos No Lineales en Negocios",
+  "subject": "Matemáticas III",
+  "institution": "Universidad William Osler",
+  "professor": "Luis Arturo López Vergara",
+  "videoConfig": {
+    "title": "Audio Overview: La Montaña de Utilidades y el Interés Compuesto",
+    "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "autoplay": false
+  }
+}</code></pre>
+        </div>
+
+        <h3 class="subsection-title"> Reproductor de Vídeo Asignado</h3>
+        <div class="video-container">
+            <!-- Sustituir la URL con el enlace real del video generado por NotebookLM -->
+            <iframe id="app_video_player" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Vídeo de la Unidad III" allowfullscreen></iframe>
+        </div>
+
+        <h3 class="subsection-title"> Cuaderno de Trabajo Activo (Registro de Evidencias)</h3>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Phase 1: Hipótesis Inicial (Precios):</label>
+                <textarea rows="3" placeholder="Si vendes un producto a $100 y nadie lo compra, tu ingreso es $0. Si lo regalas a $0 y te lo quitan de las manos, tu ingreso sigue siendo $0. ¿Dónde está el equilibrio?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Phase 2: Apuntes del Video:</label>
+                <textarea rows="3" placeholder="Anota la analogía de 'La montaña de las utilidades' y el concepto del 'Efecto bola de nieve' en el interés compuesto..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- ETAPA 2: FLASHCARDS -->
+    <div id="etapa2" class="tab-content">
+        <h2 class="section-title">Etapa 2: Simulador de Tarjetas Didácticas</h2>
+        <p>Haz clic sobre la tarjeta para voltearla y revisar la fundamentación de los modelos no lineales.</p>
+
+        <div class="flashcard-container" onclick="flipCard()">
+            <div class="flashcard" id="card">
+                <div class="flashcard-face flashcard-front">
+                    <span style="font-size: 9pt; color: var(--accent-blue); font-weight: bold;" id="card-category">FASE 1: PREGUNTA</span>
+                    <h3 style="margin-top: 10px;" id="card-title">¿Qué representa el Vértice de una parábola en los negocios?</h3>
+                    <p style="font-size: 9pt; color: var(--text-muted); margin-top: 15px;">(Haz clic para ver la respuesta)</p>
+                </div>
+                <div class="flashcard-face flashcard-back">
+                    <p id="card-answer" style="font-size: 10.5pt; line-height: 1.6;">Es el "Sweet Spot" (Punto Óptimo). Representa el precio de venta exacto que genera el máximo volumen de ingresos totales antes de que la demanda colapse.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-nav">
+            <button class="tab-btn" onclick="prevCard()">◄ Anterior</button>
+            <span style="font-weight: bold; align-self: center;" id="card-counter">1 / 4</span>
+            <button class="tab-btn" onclick="nextCard()">Siguiente ►</button>
+        </div>
+    </div>
+
+    <!-- ETAPA 3: LAB CON SLIDERS -->
+    <div id="etapa3" class="tab-content">
+        <h2 class="section-title">Etapa 3: Laboratorio Interactivo de Simulación Cuadrática (Pricing)</h2>
+        <p><strong>El Caso:</strong> Vendes tu producto a $20 y tienes 100 clientes fijos. Descubres que por cada $1 que subas el precio (Incremento x), perderás exactamente 2 clientes. ¿Cuál es el incremento perfecto?</p>
+
+        <div class="grid-3" style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <div class="form-group" style="grid-column: span 3;">
+                <label>Desliza para aumentar el Precio (Variable x):</label>
+                <div class="slider-group">
+                    <input type="range" id="e3_x" min="0" max="30" step="1" value="0" oninput="calcLab3()">
+                    <span class="slider-val" id="e3_x_val">+$0 (x=0)</span>
+                </div>
+            </div>
+        </div>
+
+        <h3>Impacto en el Mercado (En tiempo real)</h3>
+        <div class="grid-3">
+            <div class="metric-card">
+                <div class="lbl">Precio Final (20 + x)</div>
+                <div class="val" id="e3_out_precio">$20</div>
+            </div>
+            <div class="metric-card">
+                <div class="lbl">Demanda (100 - 2x)</div>
+                <div class="val" id="e3_out_demanda">100 clientes</div>
+            </div>
+            <div class="metric-card">
+                <div class="lbl">Ingreso Total (Precio × Demanda)</div>
+                <div class="val" id="e3_out_ingreso">$2,000</div>
+            </div>
+        </div>
+
+        <div class="result-box" id="e3_out_diag" style="background-color: #f1f5f9; border: 1px solid #cbd5e1;">
+            <strong>Análisis del Escenario:</strong> Mueve el deslizador. Notarás que el ingreso sube hasta cierto punto, luego la pérdida de clientes es tan fuerte que el ingreso comienza a desplomarse. ¡Encuentra el vértice!
+        </div>
+    </div>
+
+    <!-- ETAPA 4: CASOS CON IA -->
+    <div id="etapa4" class="tab-content">
+        <h2 class="section-title">Etapa 4: Análisis de Casos con IA Generativa</h2>
+        <p>Utiliza estos Prompts Profesionales para interactuar con modelos de lenguaje (como NotebookLM o Gemini).</p>
+
+        <h3>Prompt 1: Auditoría de Precios (El Vértice)</h3>
+        <div class="prompt-card">
+            <button class="copy-btn" onclick="copyPrompt('p1')">Copiar Prompt</button>
+            <span id="p1">Actúa como Analista Financiero Senior. Analiza la siguiente función de ingresos de una tortillería: I(x) = -2x^2 + 60x + 2000. 1) Utiliza la fórmula del vértice (x = -b/2a) para calcular el incremento óptimo de precio. 2) Explica a la gerencia, sin usar lenguaje matemático complejo, por qué seguir subiendo el precio más allá de este punto destruirá las utilidades de la empresa.</span>
+        </div>
+
+        <h3>Prompt 2: Evaluación de Inversión (Interés Compuesto)</h3>
+        <div class="prompt-card">
+            <button class="copy-btn" onclick="copyPrompt('p2')">Copiar Prompt</button>
+            <span id="p2">Eres un Asesor Contable. Una panadería tiene $50,000 de excedente y quiere invertirlos a 3 años. El banco ofrece un 8% anual. 1) Calcula el valor futuro usando interés compuesto. 2) Compara el resultado con un escenario de interés simple. 3) Explica el concepto de "capitalización" y cómo los intereses generan más intereses año con año.</span>
+        </div>
+    </div>
+
+    <!-- ETAPA 5: EJERCICIOS Y DASHBOARD -->
+    <div id="etapa5" class="tab-content">
+        <h2 class="section-title">Etapa 5: Tablero de Resultados Financieros (El Caso Pricing)</h2>
+        <p>Comparativa de estrategias de precio extraídas del laboratorio de simulación cuadrática.</p>
+        <table class="excel-table">
+            <thead>
+                <tr>
+                    <th>Estrategia (Valor de x)</th>
+                    <th>Precio al Público</th>
+                    <th>Volumen de Clientes</th>
+                    <th>Ingreso Total Calculado</th>
+                    <th>Diagnóstico del Modelo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Consumo Base (x=0)</strong></td>
+                    <td>$20.00</td>
+                    <td>100</td>
+                    <td>$2,000.00</td>
+                    <td><span style="background:#fef3c7; color:#b45309; padding:3px 6px; border-radius:4px; font-weight:bold;">Subprecio (Dejando dinero en la mesa)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>El Vértice (x=15)</strong></td>
+                    <td>$35.00</td>
+                    <td>70</td>
+                    <td>$2,450.00</td>
+                    <td><span style="background:#dcfce7; color:#15803d; padding:3px 6px; border-radius:4px; font-weight:bold;">Óptimo (Maximización Matemática)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Sobreprecio (x=25)</strong></td>
+                    <td>$45.00</td>
+                    <td>50</td>
+                    <td>$2,250.00</td>
+                    <td><span style="background:#fee2e2; color:#b91c1c; padding:3px 6px; border-radius:4px; font-weight:bold;">Riesgo (Caída de demanda severa)</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ETAPA 6: APLICACIÓN ADMON Y CONTABILIDAD -->
+    <div id="etapa6" class="tab-content">
+        <h2 class="section-title">Etapa 6: Aplicación a la Administración y Contabilidad</h2>
+        
+        <div class="concept-box">
+            <strong>Perspectiva Integrada:</strong> Las matemáticas no lineales obligan a los administradores a pensar en el largo plazo y en el comportamiento del consumidor.
+        </div>
+
+        <table class="excel-table">
+            <thead>
+                <tr>
+                    <th>Disciplina</th>
+                    <th>Herramienta Matemática</th>
+                    <th>Aplicación Directa en la Empresa</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Estrategia Comercial (Marketing)</strong></td>
+                    <td>Parábola Invertida (Vértice)</td>
+                    <td>Identificar la "elasticidad del precio". Ayuda a los gerentes de ventas a saber hasta qué punto el mercado tolerará un aumento de precio antes de irse con la competencia.</td>
+                </tr>
+                <tr>
+                    <td><strong>Contabilidad Financiera</strong></td>
+                    <td>Función Exponencial de Crecimiento</td>
+                    <td>Proyectar el pago de créditos bancarios a largo plazo, calcular el costo de capital de la empresa y valorar proyectos de inversión a futuro (TIR / VPN).</td>
+                </tr>
+                <tr>
+                    <td><strong>Auditoría de Activos Fijos</strong></td>
+                    <td>Decaimiento Exponencial</td>
+                    <td>Calcular la depreciación acelerada de maquinaria (método de saldos doblemente decrecientes) para deducir impuestos de manera agresiva en los primeros años.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // FLASHCARDS DATA
+    const cardsData = [
+        {
+            cat: "FUNCIONES CUADRÁTICAS",
+            title: "¿Qué representa el Vértice de una parábola en los negocios?",
+            ans: "Es el 'Sweet Spot' (Punto Óptimo). Representa el precio de venta exacto o nivel de producción que genera el máximo volumen de ingresos antes de que la demanda colapse."
+        },
+        {
+            cat: "LA FÓRMULA DEL VÉRTICE",
+            title: "¿Cuál es la fórmula para calcular matemáticamente ese precio óptimo?",
+            ans: "Se utiliza x = -b / 2a. Si una función de ingresos es I(x) = -2x² + 60x, aplicamos x = -(60) / (2 * -2) = 15. El incremento ideal es de 15."
+        },
+        {
+            cat: "FUNCIONES EXPONENCIALES",
+            title: "¿Qué diferencia al Interés Compuesto del Interés Simple?",
+            ans: "El simple solo paga sobre el capital original. El interés compuesto 'capitaliza', es decir, los intereses ganados en el Año 1 se suman al capital, generando más intereses en el Año 2 (Crecimiento en forma de J)."
+        },
+        {
+            cat: "DECAIMIENTO EXPONENCIAL",
+            title: "¿Cómo funciona la Depreciación Exponencial en la Contabilidad?",
+            ans: "El activo no pierde una cantidad fija de dinero (lineal), sino un porcentaje sobre su 'valor restante'. Pierde mucha más cantidad monetaria al principio (cuando está nuevo) que al final."
+        }
+    ];
+
+    let currentCardIdx = 0;
+
+    function updateCard() {
+        const c = cardsData[currentCardIdx];
+        document.getElementById('card-category').innerText = c.cat;
+        document.getElementById('card-title').innerText = c.title;
+        document.getElementById('card-answer').innerText = c.ans;
+        document.getElementById('card-counter').innerText = (currentCardIdx + 1) + ' / ' + cardsData.length;
+        document.getElementById('card').classList.remove('flipped');
+    }
+
+    function flipCard() {
+        document.getElementById('card').classList.toggle('flipped');
+    }
+
+    function nextCard() {
+        currentCardIdx = (currentCardIdx + 1) % cardsData.length;
+        updateCard();
+    }
+
+    function prevCard() {
+        currentCardIdx = (currentCardIdx - 1 + cardsData.length) % cardsData.length;
+        updateCard();
+    }
+
+    // Lógica del Laboratorio Cuadrático
+    function calcLab3() {
+        const x = parseInt(document.getElementById('e3_x').value);
+        document.getElementById('e3_x_val').innerText = '+$' + x + ' (x=' + x + ')';
+
+        const precio = 20 + x;
+        const demanda = 100 - (2 * x);
+        const ingreso = precio * demanda;
+
+        document.getElementById('e3_out_precio').innerText = '$' + precio;
+        document.getElementById('e3_out_demanda').innerText = demanda + ' clientes';
+        document.getElementById('e3_out_ingreso').innerText = '$' + ingreso.toLocaleString('en-US');
+
+        const diagBox = document.getElementById('e3_out_diag');
+        if (x < 15) {
+            diagBox.innerHTML = "<strong>Subprecio:</strong> Estás subiendo el precio y tus ingresos crecen rápidamente. Aún puedes exprimir más rentabilidad.";
+            diagBox.style.backgroundColor = "var(--warning-bg)";
+            diagBox.style.color = "var(--warning-text)";
+            diagBox.style.borderColor = "#fcd34d";
+        } else if (x === 15) {
+            diagBox.innerHTML = "<strong>¡Punto Óptimo Alcanzado! (El Vértice):</strong> Felicidades. Matemáticamente no puedes ganar más de $2,450. A partir de aquí, cada peso extra destruirá tu demanda.";
+            diagBox.style.backgroundColor = "var(--success-bg)";
+            diagBox.style.color = "var(--success-text)";
+            diagBox.style.borderColor = "var(--success-border)";
+        } else {
+            diagBox.innerHTML = "<strong>Sobreprecio Severo:</strong> Ya cruzaste la cima de la parábola. Los ingresos están cayendo porque estás perdiendo clientes demasiado rápido.";
+            diagBox.style.backgroundColor = "var(--danger-bg)";
+            diagBox.style.color = "var(--danger-text)";
+            diagBox.style.borderColor = "#fca5a5";
+        }
+    }
+
+    function copyPrompt(id) {
+        const text = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(text);
+        alert('Prompt copiado al portapapeles. Listo para pegar en LLMs.');
+    }
+
+    window.onload = function() {
+        updateCard();
+        calcLab3();
+    };
+</script>
+</body>
+</html>
