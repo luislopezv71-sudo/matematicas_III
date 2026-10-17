@@ -1,17 +1,8 @@
 {
   "docente": "L.I. Luis Arturo López Vergara",
-  "video": {
-    "url": "https://drive.google.com/file/d/1zOGVWQxjitUgaSxd4Q4Mp2p0ldrflJEk/view?usp=sharing",
-    "titulo": "Video Unidad III: Modelos No Lineales"
-  },
-  "infografia": {
-    "url": "https://drive.google.com/file/d/1smBv91VtQvTQceXDgtJuB0Z4fSdGCWtd/view?usp=sharing"
-  },
-  "fuenteAcademica": {
-    "driveUrl": "PEGAR_AQUI_EL_ENLACE_AL_DOCUMENTO_FUENTE_DE_NOTEBOOKLM"
-  },
-  "classroom": {
-    "url": "PEGAR_AQUI_EL_ENLACE_A_TU_GOOGLE_CLASSROOM",
-    "fechaLimite": "24 de Octubre de 2026"
-  }
+  "institucion": "Universidad William Osler",
+  "video": {"url": "https://drive.google.com/file/d/1zOGVWQxjitUgaSxd4Q4Mp2p0ldrflJEk/view?usp=sharing", "titulo": "Modelos no lineales"},
+  "infografia": {"url": "https://drive.google.com/file/d/1smBv91VtQvTQceXDgtJuB0Z4fSdGCWtd/view?usp=sharing"},
+  "fuenteAcademica": {"driveUrl": ""},
+  "classroom": {"url": "", "fechaLimite": "24 de octubre de 2026"}
 }
